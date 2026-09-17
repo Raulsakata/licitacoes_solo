@@ -22,7 +22,13 @@ Abra `http://localhost:8000`. A documentacao OpenAPI fica em `http://localhost:8
 
 O endpoint `GET /health` testa a conexão real com o banco e retorna `database: ok`. No Render, a URL PostgreSQL recebida pelo serviço é normalizada automaticamente para o driver assíncrono `asyncpg`.
 
-No Render, configure `DATABASE_URL` manualmente nas variáveis de ambiente do serviço web e do cron usando a URL do PostgreSQL externo. O `render.yaml` usa `sync: false` de propósito para nunca versionar credenciais.
+No Render, configure `DATABASE_URL` manualmente nas variáveis de ambiente do serviço web e do cron. No Supabase, abra **Connect > Session pooler**, copie a URI completa e cole o valor sem alterar host, porta, usuário ou senha. Ela terá este formato:
+
+```text
+postgresql://postgres.PROJECT_REF:SENHA@HOST_POOLER:5432/postgres
+```
+
+Não use `https://aoiwerrhjotegrgzkpzu.supabase.co` como `DATABASE_URL`: essa é a URL HTTP da API, não a conexão SQL. O `render.yaml` usa `sync: false` de propósito para nunca versionar credenciais; configure a mesma variável no serviço web e no cron.
 
 ## Dados para o frontend
 
