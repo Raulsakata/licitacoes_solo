@@ -22,6 +22,8 @@ Abra `http://localhost:8000`. A documentacao OpenAPI fica em `http://localhost:8
 
 O endpoint `GET /health` testa a conexão real com o banco e retorna `database: ok`. No Render, a URL PostgreSQL recebida pelo serviço é normalizada automaticamente para o driver assíncrono `asyncpg`.
 
+No Render, configure `DATABASE_URL` manualmente nas variáveis de ambiente do serviço web e do cron usando a URL do PostgreSQL externo. O `render.yaml` usa `sync: false` de propósito para nunca versionar credenciais.
+
 ## Dados para o frontend
 
 - `GET /api/licitacoes?uf=SP&municipio=Campinas&abertas=true`: tabela paginada de oportunidades abertas por município.
