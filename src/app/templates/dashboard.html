@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ request.app.title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><span class="eyebrow">PNCP / MONITOR</span><h1>Radar de licitações</h1></div>
+      <a class="health" href="/health">API online</a>
+    </header>
+    <section class="intro"><p>Pesquise oportunidades públicas sincronizadas do Portal Nacional de Contratações Públicas.</p></section>
+    <form class="filters" method="get">
+      <label>Termo<input name="termo" value="{{ termo }}" placeholder="Ex.: tecnologia, obras, saúde"></label>
+      <label>UF<input name="uf" value="{{ uf }}" maxlength="2" placeholder="SP"></label>
+      <label>Município<input name="municipio" value="{{ municipio }}" placeholder="Campinas"></label>
+      <button type="submit">Pesquisar</button>
+    </form>
+    <section class="metrics">
+      <div><span>Licitações abertas</span><strong>{{ summary.total_abertas }}</strong></div>
+      <div><span>Exclusivas para MPE</span><strong>{{ summary.total_exclusivas_mpe }}</strong></div>
+      <div><span>Municípios monitorados</span><strong>{{ summary.por_municipio | length }}</strong></div>
+    </section>
+    <section class="charts">
+      <div class="chart"><h2>Por município</h2>{% for row in summary.por_municipio %}<div class="bar-row"><span>{{ row.municipio }}</span><i style="width: {{ (row.total / (summary.total_abertas or 1) * 100) | round(1) }}%"></i><b>{{ row.total }}</b></div>{% else %}<p>Sem dados.</p>{% endfor %}</div>
+      <div class="chart"><h2>Por modalidade</h2>{% for row in summary.por_modalidade %}<div class="bar-row"><span>{{ row.modalidade }}</span><i style="width: {{ (row.total / (summary.total_abertas or 1) * 100) | round(1) }}%"></i><b>{{ row.total }}</b></div>{% else %}<p>Sem dados.</p>{% endfor %}</div>
+    </section>
+    <div class="summary"><strong>{{ total }}</strong> oportunidades abertas na tabela</div>
+    <section class="results">
+      {% for item in items %}
+      <article class="result">
+        <div class="result-meta"><span>{{ item.uf or 'BR' }}{% if item.municipio %} · {{ item.municipio }}{% endif %}</span><span>{{ item.data_publicacao or 'Data não informada' }}</span></div>
+        <h2>{{ item.objeto }}</h2>
+        <p>{{ item.orgao_nome or 'Órgão não informado' }} · {{ item.modalidade or 'Modalidade não informada' }}</p>
+        <span class="mpe-tag">{% if item.exclusiva_mpe %}Exclusiva MPE{% elif item.participa_mpe %}Benefício MPE{% else %}Verificar edital{% endif %}</span>
+        {% if item.url_origem %}<a href="{{ item.url_origem }}" target="_blank" rel="noreferrer">Abrir no portal ↗</a>{% endif %}
+      </article>
+      {% else %}<div class="empty">Nenhuma licitação local encontrada. Execute uma sincronização para importar dados do PNCP.</div>{% endfor %}
+    </section>
+  </main>
+</body>
+</html>
